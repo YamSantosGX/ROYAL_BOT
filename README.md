@@ -13,7 +13,7 @@ O **ROYAL BOT** foi criado para atender às principais necessidades de servidore
 ## 🛠️ Funcionalidades
 
 ### Registro de Membros
-O bot faz o registro automático dos membros que entram no servidor, podendo também coletar informações adicionais de acordo com a configuração.
+O bot faz o registro manual dos membros que entram no servidor, podendo também coletar informações adicionais de acordo com a configuração.
 
 ### Definir Jogos Transmitidos
 Administradores do servidor possuem comandos específicos para informar quais jogos estão sendo transmitidos no momento, facilitando o engajamento e a organização do público.
@@ -32,7 +32,7 @@ Permite listar, sob comando, as casas de apostas de futebol que atuam legalmente
    - Configure as permissões e variáveis de ambiente necessárias conforme especificado nos arquivos de configuração do projeto.
 
 3. **Execução**
-   - Execute o bot com o comando correspondente ao seu ambiente (por exemplo, `node bot.js` para um bot em Node.js).
+   - Execute o bot com o comando correspondente ao seu ambiente (por exemplo, python main.py` para um bot em python).
 
 4. **Comandos Principais**
    - `!registrar`: Inicia o registro de um novo membro.
