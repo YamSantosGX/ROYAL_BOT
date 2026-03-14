@@ -9,7 +9,35 @@ class Registro(commands.Cog):
         self.logchannel_id = int(os.getenv("ID_CANAL_LOGS", 0))
 
     @commands.command(name="registrar")
-    async def registrar(self, ctx, nome: str, idade: int, email: str, telefone: str):
+    async def registrar(self, ctx, *, dados: str):
+        partes = dados.split(";")
+
+        if len(partes) < 4:
+            return await ctx.send(f"{ctx.author.mention}, por favor forneça os dados no formato: `!registrar Nome;Idade;Email;Telefone`")
+        
+        nome = partes[0].strip()
+        idade_str = partes[1].strip()
+        email = partes[2].strip()
+        telefone = partes[3].strip()
+
+        # --- Validação simples para idade ---
+        try:
+            idade = int(idade_str)
+        except ValueError:
+            return await ctx.send(f"{ctx.author.mention}, a idade deve ser um número inteiro.")
+        
+        # --- Validação simples para email ---
+        if "@" not in email or "." not in email:
+            return await ctx.send(
+                f"❌ {ctx.author.mention}, o e-mail informado (`{email}`) parece ser inválido. "
+                f"Certifique-se de incluir o '@' e o domínio (ex: .com, .com.br)."
+            )
+        
+        # --- Validação simples para telefone ---
+        numeros_telefone = ''.join(filter(str.isdigit, telefone))
+        if len(numeros_telefone) < 10:
+            return await ctx.send(f"{ctx.author.mention}, o telefone informado parece ser inválido. Certifique-se de incluir o DDD e o número (ex: (11) 99999-9999).")
+
         canal_logs = self.bot.get_channel(self.logchannel_id)
         
         if canal_logs:
@@ -25,29 +53,37 @@ class Registro(commands.Cog):
         else:
             await ctx.send("Erro: Canal de logs não encontrado.")
 
-    @app_commands.command(name="ajuda", description="Mostra como usar os comandos do bot")
-    async def ajuda(self, interaction: discord.Interaction):
-        embed = discord.Embed(
-            title="📚 Guia de Comandos",
-            description="Aqui estão as instruções para utilizar as funções do bot:",
-            color=discord.Color.dark_gold()
-        )
-        embed.add_field(
-            name="/registrar", 
-            value="Inicia seu cadastro.\n**Uso:** `/registrar nome: João idade: 25 email: joao@email.com telefone: (11) 99999-9999`", 
-            inline=False
-        )
-        embed.add_field(
-            name="/definirjogo", 
-            value="Escolhe um jogo aleatório entre as opções enviadas.\n**Uso:** `/definirjogo opcoes: LoL, CS, Valorant`", 
-            inline=False
-        )
-        
-        await interaction.response.send_message(embed=embed)
+    # Comando de barra (Slash)
 
-    # Comando de Registro (Slash)
     @app_commands.command(name="registrar", description="Realiza o registro de informações")
     async def registrar(self, interaction: discord.Interaction, nome: str, idade: int, email: str, telefone: str):
+
+        try:
+            idade = int(idade)        
+        except ValueError:
+            await interaction.response.send_message(
+                f"❌ {interaction.user.mention}, a idade informada (`{idade}`) parece ser inválida. "
+                f"Certifique-se de incluir um número inteiro.",
+                ephemeral=True
+            )
+            return
+
+        if "@" not in email or "." not in email:
+            await interaction.response.send_message(
+                f"❌ {interaction.user.mention}, o e-mail informado (`{email}`) parece ser inválido. "
+                f"Certifique-se de incluir o '@' e o domínio (ex: .com, .com.br).",
+                ephemeral=True
+            )
+            return
+        
+        if len(''.join(filter(str.isdigit, telefone))) < 10:
+            await interaction.response.send_message(
+                f"❌ {interaction.user.mention}, o telefone informado parece ser inválido. "
+                f"Certifique-se de incluir o DDD e o número (ex: (11) 99999-9999).",
+                ephemeral=True
+            )
+            return
+
         canal_logs = self.bot.get_channel(self.logchannel_id)
         
         if not canal_logs:
